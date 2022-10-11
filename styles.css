@@ -1,0 +1,10 @@
+button {
+    height: 100px;
+    width: 100px;
+}
+
+#gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
