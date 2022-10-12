@@ -81,8 +81,8 @@ const gamePlay =(() => {
 
     const hideForm = () => {
         // this is also public as it's a event function
-        playerOne.name = document.getElementById('player-one').value;
-        playerTwo.name = document.getElementById('player-two').value;
+        playerOne.name = document.getElementById('player-one').value.toUpperCase();
+        playerTwo.name = document.getElementById('player-two').value.toUpperCase();
         frm.hidden = true;
         frm.classList.add('hidden');
         playArea.hidden = false;
