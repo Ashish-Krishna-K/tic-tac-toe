@@ -10,13 +10,24 @@
 </head>
 <body>
     <form action="index.html">
-        <div>Please input your name</div>
+        <h1>Please input your name</h1>
 
-        <label for="player-one">Player 1: </label>
-        <input type="text" name="player-one" id="player-one">
+        <ul>
+            <li>
 
-        <label for="player-two">Player 2: </label>
-        <input type="text" name="player-two" id="player-two">
+                <label for="player-one">Player 1: </label>
+                <input type="text" name="player-one" id="player-one">
+        
+            </li>
+            
+            <li>
+
+                <label for="player-two">Player 2: </label>
+                <input type="text" name="player-two" id="player-two">
+        
+            </li>
+        </ul>
+
 
         <button type="button" id="start">Start game</button>
     </form>
@@ -26,6 +37,9 @@
         <div id="gameboard">
             
         </div>
+    </div>
+    <div id="win-area" hidden>
+
     </div>
 </body>
 </html>

@@ -1,3 +1,6 @@
+const frm = document.querySelector('form');
+const frmBtn = frm.querySelector('button');
+const playArea = document.querySelector('#play-area')
 
 const gameBoardObj = {
     board: ['', '', '', '', '', '', '', '', ''],
@@ -20,6 +23,8 @@ const helpers = {
 };
 
 const createPlayarea =( () => {
+    // this is a module that will return the reset game button which is accessed later
+
     const gameBoardArea = document.querySelector('#gameboard');
     const turnIndicator = document.querySelector('#turn');
 
@@ -32,48 +37,56 @@ const createPlayarea =( () => {
 
         gameBoardArea.appendChild(displayButton);
     });
+
+    const resetGameBtn = document.createElement('button');
+    resetGameBtn.classList.add('reset')
+    resetGameBtn.textContent = 'Reset Game'
+
+    playArea.appendChild(resetGameBtn);
+
+    return { resetGameBtn }
+
 })();
 
-function playerOnePlays(name, marker) {
-}
+const winArea = ( () => {
+    //another module that returns 4 itmes all will be accessed in different situations later
 
+    const resultArea = document.querySelector('#win-area');
 
+    const displayResult = document.createElement('div');
+    displayResult.classList.add('winner-div');
+    const playAgainBtn = document.createElement('button');
+    playAgainBtn.classList.add('play-again');
+    playAgainBtn.textContent = 'PLAY AGAIN'
+    const exitGameBtn = document.createElement('button');
+    exitGameBtn.classList.add('exit-game');
+    exitGameBtn.textContent = 'EXIT GAME'
 
-// the page should display a form to accept inputs for player 1 & player 2 name and a start game button
-// pressing start game should assign player names to respective object values and hide the form and then fire the createplayarea function
-// the createplayarea function should first input some default message in the turnindicator div
-// it should then create a grid of 9 buttons and assign a dataset value called index to each of the buttons which is the same as the gameboard array
-// an eventlistener should be assigned to each button to fire a playgame function
-// the playgame function will first check if the counter is equal to or greater than 8 if true it will return displaywinner as tie
-// if it's false it will then check if the button pressed already has a text content if true it will not do anything
-// if this is false it will check if the counter value is even or odd
-// if even it will run playeroneplays function if odd it will run playertwoplays function
-// playeroneplays & playertwoplays will frist change the turnindicator value to player name then it will change the corresponding index in board array's value to player marker
-// then it will change the this button's text content to player marker
-// it will then run checkwinner function
-// checkwinner function if called by playeroneplays/playertwoplays will check each row, colum, and diagnol to have consecutive 'x'es
-// if this is true it will change winstatus to true and winner to player name
-// if false it will return nothing/maintains status quo
-// after playeroneplays/playertwoplays is executed the playgame function will check winstatus if it's false it will continue
-// if false it will return displaywinner
+    resultArea.appendChild(displayResult);
+    resultArea.appendChild(playAgainBtn);
+    resultArea.appendChild(exitGameBtn);
 
-
-const frm = document.querySelector('form');
-const frmBtn = frm.querySelector('button');
-const playArea = document.querySelector('#play-area')
+    return { resultArea, displayResult, playAgainBtn, exitGameBtn }
+})();
 
 const gamePlay =(() => {
+
+    // the main module has many different items some are public some are private
 
     const playArea = document.querySelector('#play-area');
     const gameBoardArea = document.querySelector('#gameboard');
     const turnIndicator = document.querySelector('#turn');
     const buttons = gameBoardArea.querySelectorAll('button');
+    // the buttons is public as we need to access it to attach the event listener down the line
 
     const hideForm = () => {
+        // this is also public as it's a event function
         playerOne.name = document.getElementById('player-one').value;
         playerTwo.name = document.getElementById('player-two').value;
         frm.hidden = true;
-        playArea.hidden = false;    
+        frm.classList.add('hidden');
+        playArea.hidden = false;
+        playArea.classList.add('visible');    
     }
 
     const playGame = function () {
@@ -97,30 +110,159 @@ const gamePlay =(() => {
         }
     
         helpers.counter++
-        console.log(helpers.counter);
-        console.log(gameBoardObj.board)  
+
     }
 
     const playerOnePlays = (marker, indexNumber, buttonVal) => {
         gameBoardObj.board[indexNumber] = marker;
         buttonVal.textContent = gameBoardObj.board[indexNumber];
+        checkXWins(playerOne.marker);
         return;    
     }
 
     const playerTwoPlays = (marker, indexNumber, buttonVal) => {
         gameBoardObj.board[indexNumber] = marker;
         buttonVal.textContent = gameBoardObj.board[indexNumber];
+        checkOWins(playerTwo.marker);
         return;    
+    }
+
+    // both the checkXWins and checkOWins are super long, inefficient and messy code as I couldn't figure out any other way to check for 3 same markers in a row.
+
+    const checkXWins = (marker) => {
+        if (gameBoardObj.board[0] === marker && gameBoardObj.board[1] === marker && gameBoardObj.board[2] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+        if (gameBoardObj.board[3] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[5] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+        if (gameBoardObj.board[6] === marker && gameBoardObj.board[7] === marker && gameBoardObj.board[8] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+        if (gameBoardObj.board[0] === marker && gameBoardObj.board[3] === marker && gameBoardObj.board[6] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+        if (gameBoardObj.board[1] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[7] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+        if (gameBoardObj.board[2] === marker && gameBoardObj.board[5] === marker && gameBoardObj.board[8] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+        if (gameBoardObj.board[0] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[8] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+        if (gameBoardObj.board[2] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[6] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerOne.name
+        }
+    }
+
+    const checkOWins = (marker) => {
+        if (gameBoardObj.board[0] === marker && gameBoardObj.board[1] === marker && gameBoardObj.board[2] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+        if (gameBoardObj.board[3] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[5] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+        if (gameBoardObj.board[6] === marker && gameBoardObj.board[7] === marker && gameBoardObj.board[8] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+        if (gameBoardObj.board[0] === marker && gameBoardObj.board[3] === marker && gameBoardObj.board[6] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+        if (gameBoardObj.board[1] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[7] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+        if (gameBoardObj.board[2] === marker && gameBoardObj.board[5] === marker && gameBoardObj.board[8] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+        if (gameBoardObj.board[0] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[8] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+        if (gameBoardObj.board[2] === marker && gameBoardObj.board[4] === marker && gameBoardObj.board[6] === marker) {
+            helpers.winStatus = true;
+            helpers.winner = playerTwo.name
+        }
+    }
+
+    const displaywinner = () => {
+
+        if (helpers.winStatus) {
+            playArea.hidden = true;
+            playArea.classList.remove('visible')
+            winArea.resultArea.hidden = false;
+            winArea.resultArea.classList.add('visible')
+            
+            winArea.displayResult.textContent = `${helpers.winner} WINS THE GAME`
+        }
+
+        if (helpers.counter === 9 && !helpers.winStatus) {
+            playArea.hidden = true;
+            playArea.classList.remove('visible')    
+            winArea.resultArea.hidden = false;
+            winArea.resultArea.classList.add('visible')
+            
+            winArea.displayResult.textContent = `IT'S A DRAW!!!`
+        
+        }
+    }
+
+
+    const resetGame = () => {
+        gameBoardObj.board = ['', '', '', '', '', '', '', '', ''];
+        helpers.counter = 0,
+        helpers.winStatus = false,
+        helpers.winner =  ''
+
+        buttons.forEach(button => button.textContent = '')
     }
 
     return { 
         hideForm,
         buttons,
-        playGame
+        playGame,
+        displaywinner,
+        resetGame
     }
+
 })();
 
 frmBtn.addEventListener('click', gamePlay.hideForm);
 
-gamePlay.buttons.forEach(button => button.addEventListener('click', gamePlay.playGame))
+gamePlay.buttons.forEach(button => button.addEventListener('click', gamePlay.playGame));
+
+gamePlay.buttons.forEach(button => button.addEventListener('click', gamePlay.displaywinner));
+
+createPlayarea.resetGameBtn.addEventListener('click', gamePlay.resetGame);
+
+winArea.playAgainBtn.addEventListener('click', function(){
+    gamePlay.resetGame();
+
+    playArea.hidden = false;
+    playArea.classList.add('visible');    
+    winArea.resultArea.hidden = true;
+    winArea.resultArea.classList.remove('visible');
+});
+
+winArea.exitGameBtn.addEventListener('click', function(){
+    console.log
+    window.location.reload();
+});
+
+
+
 
