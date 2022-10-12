@@ -53,7 +53,7 @@ const winArea = ( () => {
 
     const resultArea = document.querySelector('#win-area');
 
-    const displayResult = document.createElement('div');
+    const displayResult = document.createElement('h1');
     displayResult.classList.add('winner-div');
     const playAgainBtn = document.createElement('button');
     playAgainBtn.classList.add('play-again');
@@ -207,7 +207,7 @@ const gamePlay =(() => {
             winArea.resultArea.hidden = false;
             winArea.resultArea.classList.add('visible')
             
-            winArea.displayResult.textContent = `${helpers.winner} WINS THE GAME`
+            winArea.displayResult.textContent = `PLAYER "${helpers.winner}" WINS THE GAME`
         }
 
         if (helpers.counter === 9 && !helpers.winStatus) {

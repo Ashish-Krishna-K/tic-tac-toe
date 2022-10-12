@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&family=Pacifico&family=Silkscreen&display=swap');
+
+
 * {
     margin: 0;
     padding: 0;
@@ -12,6 +15,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'Lobster', cursive;
 }
 
 ul {
@@ -24,6 +28,10 @@ form {
     gap: 24px;
 }
 
+input {
+    font-family: 'Pacifico', cursive;
+}
+
 form.hidden {
     display: none;
 }
@@ -31,12 +39,18 @@ form.hidden {
 button {
     height: 100px;
     width: 100px;
+    font-family: 'Silkscreen', cursive;
 }
 
 #gameboard {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
+}
+
+.display {
+    font-size: 75px;
+    font-weight: bolder;
 }
 
 #play-area.visible {
@@ -59,7 +73,7 @@ button {
     justify-items: center;
 }
 
-#win-area>div {
+#win-area>h1 {
     grid-column: 1 / 3;
 }
 
