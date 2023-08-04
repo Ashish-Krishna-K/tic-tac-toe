@@ -22,39 +22,64 @@
 // from the game board, if not we will proceed to the next play.
 
 const gameBoard = (() => {
-    type diagnols = 1 | 2;
-    const matrix:string[][] = [
+    // a diagonals type because we want getDiagonal to accept only 1 | 2 as inputs.
+    type diagonals = 1 | 2;
+    // 2D array for storing the grid
+    const grid:string[][] = [
         [],
         [],
         []
     ]
-    const getRows = (rowNumber: number) => matrix[rowNumber].join('');
+    // x and y here represents rows and column number respectively
+    const updateValue = (x: number, y: number, marker:string) => {
+        grid[x][y] = marker;
+    }
+    // rows corresponds to the parent array inside our grid, so we simply return
+    // the corresponding row as a string
+    const getRows = (rowNumber: number) => grid[rowNumber].join('');
+    // we loop through each row(parent array) and grab the nth element(n refers to
+    // the passed in value) and return it as a string
     const getColumns = (columnNumber: number) => {
         let column = '';
-        for (let i = 0; i < matrix.length; i++) {
-            column += matrix[i][columnNumber];
+        for (let i = 0; i < grid.length; i++) {
+            column += grid[i][columnNumber];
         }
         return column;
     }
-    const getDiagnols = (diagnolNumber: diagnols) => {
-        let diagnol = '';
-        if (diagnolNumber === 1) {
-            for (let i = 0; i < matrix.length; i++) {
-                for (let j = 0; j < matrix.length; j++) {
+    // There is two possible diagonals, the primary and secondary diagonals
+    // for the primary diagonal if row = column that's the diagonal element
+    // for the secondary diagonal if row = totalRows - column - 1 then it's 
+    // the diagonal element, this function accepts either 1 or 2 as input
+    // (controlled by the diagonals type declared earlier) if the argument 
+    // is 1 we return the primary diagonal, if it's 2 we return the secondary
+    // diagonal
+    const getDiagonal = (diagonalNumber: diagonals) => {
+        let diagonal = '';
+        if (diagonalNumber === 1) {
+            for (let i = 0; i < grid.length; i++) {
+                for (let j = 0; j < grid.length; j++) {
                     if (i === j) {
-                        diagnol += matrix[i][j];
+                        diagonal += grid[i][j];
                     }
                 }
             }
         } else {
-            for (let i = 0; i < matrix.length; i++) {
-                for (let j = 0; j < matrix.length; j++) {
-                    if ((i + j) === (matrix.length - 1)) {
-                        diagnol += matrix[i][j];
+            for (let i = 0; i < grid.length; i++) {
+                for (let j = 0; j < grid.length; j++) {
+                    if ((i + j) === (grid.length - 1)) { 
+                        // using Math to check row = totalRows - column -1
+                        diagonal += grid[i][j];
                     }
                 }
             }
         }
-        return diagnol;
+        return diagonal;
+    }
+    // We expose only the required methods while keeping the matrix private.
+    return {
+        updateValue,
+        getRows,
+        getColumns,
+        getDiagonal
     }
 })();
