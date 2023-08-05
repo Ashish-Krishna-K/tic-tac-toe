@@ -5,13 +5,13 @@ type Diagonals = 1 | 2;
 
 const gameBoard = (() => {
     // 2D array for storing the grid
-    const grid:Markers[][] = [
+    const grid: Markers[][] = [
         [],
         [],
         []
     ];
     // x and y here represents rows and column number respectively
-    const updateValue = (row: number, column: number, marker:Markers) => {
+    const updateValue = (row: number, column: number, marker: Markers) => {
         grid[row][column] = marker;
     }
     // rows corresponds to the parent array inside our grid, so we simply return
@@ -46,7 +46,7 @@ const gameBoard = (() => {
         } else {
             for (let i = 0; i < grid.length; i++) {
                 for (let j = 0; j < grid.length; j++) {
-                    if ((i + j) === (grid.length - 1)) { 
+                    if ((i + j) === (grid.length - 1)) {
                         // using Math to check row = totalRows - column -1
                         diagonal += grid[i][j];
                     }
@@ -57,7 +57,7 @@ const gameBoard = (() => {
     }
     // Instead of accesssing the whole grid/matrix we will let outsiders only get
     // individual cell value
-    const getCellValue = (row:number, column:number) => grid[row][column];
+    const getCellValue = (row: number, column: number) => grid[row][column];
     // We expose only the required methods while keeping the matrix private.
     const getLength = () => grid.length;
 
@@ -83,7 +83,7 @@ interface Player {
     name: string,
     marker: Markers
 }
-const player = (playerName: string, marker: Markers):Player => {
+const player = (playerName: string, marker: Markers): Player => {
     const name = playerName;
     return {
         name,
@@ -93,35 +93,37 @@ const player = (playerName: string, marker: Markers):Player => {
 
 // The gameController module will hold all the logic related to
 // the gameflow
-const gameController  = (() => {
+const gameController = (() => {
     // numOfTurnsPlayed is used to determine both a draw result
     // and to track which player's turn is it currently.
     let numOfTurnsPlayed = 0;
-    let winner:Player | null = null;
-    let playerOne:Player | null = null;
-    let playerTwo:Player | null = null;
+    let winner: Player | null = null;
+    let playerOne: Player | null = null;
+    let playerTwo: Player | null = null;
 
-    const createPlayers = (playerOneName: string, playerTwoName:string) => {
-        playerOne = player(playerOneName || "Player One", "X");
-        playerTwo = player(playerTwoName || "Player Two", "O");
+    const createPlayers = (playerOneName: string, playerTwoName: string) => {
+        playerOne = player(playerOneName, "X");
+        playerTwo = player(playerTwoName, "O");
     }
 
     const playTurn = (ev: MouseEvent) => {
         // Coordinates for each grid cell will be stored in x,y format as a value,
         // so we grab the value and split at the comma to get the coordinates array.
-        const coordinates = (ev.target as HTMLButtonElement).nodeValue?.split(',') as string[];
+        const coordinates = (ev.target as HTMLButtonElement).value?.split(',') as string[];
+        const row = parseInt(coordinates[0]);
+        const column = parseInt(coordinates[1]);
         // we'll check if the move made by player is valid
-        
+        if (gameBoard.getCellValue(row, column)) return;
         // destructuring the displayController to grab only the required methods
-        const {updateResultDisplay, renderGrid} = displayController;
+        const { updateResultDisplay, renderGrid } = displayController;
         // This if statement is purely to shut TypeScript lol
         if (playerOne !== null && playerTwo !== null) {
             // this is simple if the numOfTurnsPlayed is even we 
             // will place playerOne's marker, if it's odd we will 
             // place playerTwo's marker, since the coordinates array is
             // a string array we're converting the values into number
-            gameBoard.updateValue(parseInt(coordinates[0]), parseInt(coordinates[1]), 
-                    numOfTurnsPlayed % 2 === 0 ? playerOne.marker : playerTwo.marker);
+            gameBoard.updateValue(row, column,
+                numOfTurnsPlayed % 2 === 0 ? playerOne.marker : playerTwo.marker);
             numOfTurnsPlayed++
             // After each turn we re-render the grid
             renderGrid();
@@ -132,7 +134,7 @@ const gameController  = (() => {
         }
     }
 
-    const checkWinner = (marking:string) => {
+    const checkWinner = (marking: string) => {
         switch (marking) {
             case ("XXX"):
                 return playerOne;
@@ -143,29 +145,19 @@ const gameController  = (() => {
         }
     }
 
-    const declareWinner = () => {
-        // if winner object is null, it's a draw and we display accordingly,
-        // if not null we'll display the winner name
-        displayController.updateResultDisplay(winner ? `${winner.name} wins the game!` : "It's a draw!");
-        // once we declare winner we'll remove the event listener from the grid
-        // buttons
-        displayController.getGridCellsList().forEach(btn => {
-            (btn as HTMLButtonElement).removeEventListener("click", playTurn);
-        })
-    }
-    
     const checkTurnResult = () => {
+        const {declareWinner} = displayController;
         // If the numOfTurnsPlayed is 8 or greater and the winner
         // is currently null it means the game is a draw
-        if (numOfTurnsPlayed >= 8 && winner === null) {
-            declareWinner();
+        if (numOfTurnsPlayed >= 9 && winner === null) {
+            declareWinner(winner);
         } else {
             // check each row to see if there's a 3 in a row
             for (let i = 0; i < 3; i++) {
                 const row = gameBoard.getRows(i);
                 winner = checkWinner(row);
                 if (winner !== null) {
-                    declareWinner();
+                    declareWinner(winner);
                     return;
                 };
             }
@@ -174,16 +166,16 @@ const gameController  = (() => {
                 const column = gameBoard.getColumns(i);
                 winner = checkWinner(column);
                 if (winner !== null) {
-                    declareWinner();
+                    declareWinner(winner);
                     return;
                 };
             }
             // check each diagonal to see if there's a 3 in a row
-            for (let i = 1  as Diagonals; i < 3; i++) {
+            for (let i = 1 as Diagonals; i < 3; i++) {
                 const diagonal = gameBoard.getDiagonal(i);
                 winner = checkWinner(diagonal);
                 if (winner !== null) {
-                    declareWinner();
+                    declareWinner(winner);
                     return;
                 };
             }
@@ -195,38 +187,32 @@ const gameController  = (() => {
         const {
             playerOneNameInput,
             playerTwoNameInput,
+            updateResultDisplay,
             renderGrid,
-            getGridCellsList
         } = displayController
 
-        const playerOneName = (playerOneNameInput as HTMLInputElement).nodeValue;
-        const playerTwoName = (playerTwoNameInput as HTMLInputElement).nodeValue;
-        
-        if (!playerOneName || !playerTwoName) {
-            return;
-        } else {
-            // create new player objects passing the values of playerOneInput
-            // and playerTwoInput as the playerNames
-            createPlayers(playerOneName, playerTwoName);
-            renderGrid();
-            // Tie in the playTurn method as the event handler to the grid cells
-            getGridCellsList().forEach(btn => {
-                (btn as HTMLButtonElement).addEventListener("click", playTurn)
-            })
-        }
+        const playerOneName = (playerOneNameInput as HTMLInputElement).value || "Player One";
+        const playerTwoName = (playerTwoNameInput as HTMLInputElement).value || "Player Two";
+
+        // create new player objects passing the values of playerOneInput
+        // and playerTwoInput as the playerNames
+        createPlayers(playerOneName, playerTwoName);
+        updateResultDisplay(`${playerOneName}'s Turn`)
+        renderGrid();
     }
 
     const resetGame = () => {
+        numOfTurnsPlayed = 0;
+        winner = null;
         gameBoard.resetGrid();
+        displayController.updateResultDisplay(`${playerOne?.name}'s Turn`);
         displayController.renderGrid();
-        displayController.getGridCellsList().forEach(btn => {
-            (btn as HTMLButtonElement).addEventListener("click", playTurn)
-        })
     }
 
     return {
         startGame,
-        resetGame
+        resetGame,
+        playTurn
     }
 
 })();
@@ -241,7 +227,7 @@ const displayController = (() => {
     const gridDisplay = document.querySelector('section#grid');
     const gridContainer = document.querySelector('div.grid-container');
 
-    const updateResultDisplay = (msg:string) => {
+    const updateResultDisplay = (msg: string) => {
         if (resultDisplay) {
             resultDisplay.textContent = msg
         };
@@ -252,7 +238,7 @@ const displayController = (() => {
         playerNamesFrm?.classList.add('hidden');
         gridDisplay?.classList.remove('hidden');
         // remove all child elements of gridContainer
-        while(gridContainer?.firstChild) {
+        while (gridContainer?.firstChild) {
             gridContainer.removeChild(gridContainer.firstChild);
         }
         // use nested loops to create a new grid
@@ -263,14 +249,27 @@ const displayController = (() => {
             for (let j = 0; j < length; j++) {
                 const cell = document.createElement('button');
                 cell.classList.add('grid-cell');
-                cell.nodeValue = `${i}, ${j}`;
+                // assign the values of i and j as x and y coordinates
+                cell.value = `${i}, ${j}`;
                 cell.textContent = gameBoard.getCellValue(i, j);
+                cell.addEventListener("click", gameController.playTurn)
                 gridRow.appendChild(cell);
             }
             gridContainer?.appendChild(gridRow);
         }
     }
     const getGridCellsList = () => document.querySelectorAll('button.grid-cell');
+
+    const declareWinner = (winner: Player | null) => {
+        // if winner object is null, it's a draw and we display accordingly,
+        // if not null we'll display the winner name
+        updateResultDisplay(winner ? `${winner.name} wins the game!` : "It's a draw!");
+        // once we declare winner we'll remove the event listener from the grid
+        // buttons
+        getGridCellsList().forEach(btn => {
+            (btn as HTMLButtonElement).removeEventListener("click", gameController.playTurn);
+        })
+    }
 
     return {
         playerOneNameInput,
@@ -279,7 +278,7 @@ const displayController = (() => {
         updateResultDisplay,
         startGameBtn,
         restartGameBtn,
-        getGridCellsList
+        declareWinner
     }
 })();
 

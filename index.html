@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,35 @@
     <script src="index.js" defer></script>
     <title>Tic-Tac_Toe</title>
 </head>
+
 <body>
-    
+    <header>
+        <h1>Tic-Tac-Toe</h1>
+    </header>
+    <main>
+        <section id="form">
+            <div class="pseudo-form">
+                <h2>Input Player Names</h2>
+                <div class="player-one-details">
+                    <label for="player-one">Player One's Name: </label>
+                    <input type="text" name="player-one" id="player-one">
+                </div>
+                <div class="player-two-details">
+                    <label for="player-two">Player Two's Name: </label>
+                    <input type="text" name="player-two" id="player-two">
+                </div>
+                <button class="start-game">Start Game</button>
+            </div>
+        </section>
+        <section id="grid" class="hidden">
+            <h2 class="result-display"></h2>
+            <div class="grid-container"></div>
+            <button class="reset-game">Restart Game</button>
+        </section>
+    </main>
+    <footer>
+        <p>Project by <a href="https://github.com/Ashish-Krishna-K">Ashish-Krishna-K</a></p>
+    </footer>
 </body>
+
 </html>
