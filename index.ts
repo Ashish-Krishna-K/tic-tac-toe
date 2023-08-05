@@ -9,7 +9,7 @@ const gameBoard = (() => {
         [],
         [],
         []
-    ]
+    ];
     // x and y here represents rows and column number respectively
     const updateValue = (row: number, column: number, marker:Markers) => {
         grid[row][column] = marker;
@@ -60,13 +60,20 @@ const gameBoard = (() => {
     const getCellValue = (row:number, column:number) => grid[row][column];
     // We expose only the required methods while keeping the matrix private.
     const getLength = () => grid.length;
+
+    const resetGrid = () => {
+        grid.forEach(row => {
+            row.splice(0, row.length);
+        })
+    }
     return {
         updateValue,
         getRows,
         getColumns,
         getDiagonal,
         getCellValue,
-        getLength
+        getLength,
+        resetGrid
     }
 })();
 
@@ -95,8 +102,8 @@ const gameController  = (() => {
     let playerTwo:Player | null = null;
 
     const createPlayers = (playerOneName: string, playerTwoName:string) => {
-        playerOne = player(playerOneName, "X");
-        playerTwo = player(playerTwoName, "O");
+        playerOne = player(playerOneName || "Player One", "X");
+        playerTwo = player(playerTwoName || "Player Two", "O");
     }
 
     const playTurn = (ev: MouseEvent) => {
@@ -137,8 +144,12 @@ const gameController  = (() => {
     }
 
     const declareWinner = () => {
-        displayController.updateResultDisplay(winner ? `${winner.name} wins the game!` : "It's a draw!")
-        displayController.gridCellsList.forEach(btn => {
+        // if winner object is null, it's a draw and we display accordingly,
+        // if not null we'll display the winner name
+        displayController.updateResultDisplay(winner ? `${winner.name} wins the game!` : "It's a draw!");
+        // once we declare winner we'll remove the event listener from the grid
+        // buttons
+        displayController.getGridCellsList().forEach(btn => {
             (btn as HTMLButtonElement).removeEventListener("click", playTurn);
         })
     }
@@ -155,27 +166,25 @@ const gameController  = (() => {
                 winner = checkWinner(row);
                 if (winner !== null) {
                     declareWinner();
-                    break;
+                    return;
                 };
             }
-            if (winner !== null) return;
             // check each column to see if there's a 3 in a row
             for (let i = 0; i < 3; i++) {
                 const column = gameBoard.getColumns(i);
                 winner = checkWinner(column);
                 if (winner !== null) {
                     declareWinner();
-                    break;
+                    return;
                 };
             }
-            if (winner !== null) return;
             // check each diagonal to see if there's a 3 in a row
             for (let i = 1  as Diagonals; i < 3; i++) {
                 const diagonal = gameBoard.getDiagonal(i);
                 winner = checkWinner(diagonal);
                 if (winner !== null) {
                     declareWinner();
-                    break;
+                    return;
                 };
             }
             return;
@@ -183,18 +192,41 @@ const gameController  = (() => {
     }
 
     const startGame = () => {
-        const playerOneName = (displayController.playerOneNameInput as HTMLInputElement).nodeValue;
-        const playerTwoName = (displayController.playerTwoNameInput as HTMLInputElement).nodeValue;
-        if (playerOneName === null || playerTwoName === null) {
+        const {
+            playerOneNameInput,
+            playerTwoNameInput,
+            renderGrid,
+            getGridCellsList
+        } = displayController
+
+        const playerOneName = (playerOneNameInput as HTMLInputElement).nodeValue;
+        const playerTwoName = (playerTwoNameInput as HTMLInputElement).nodeValue;
+        
+        if (!playerOneName || !playerTwoName) {
             return;
         } else {
+            // create new player objects passing the values of playerOneInput
+            // and playerTwoInput as the playerNames
             createPlayers(playerOneName, playerTwoName);
-            displayController.showGrid();
-            displayController.renderGrid();
-            displayController.gridCellsList.forEach(btn => {
+            renderGrid();
+            // Tie in the playTurn method as the event handler to the grid cells
+            getGridCellsList().forEach(btn => {
                 (btn as HTMLButtonElement).addEventListener("click", playTurn)
             })
         }
+    }
+
+    const resetGame = () => {
+        gameBoard.resetGrid();
+        displayController.renderGrid();
+        displayController.getGridCellsList().forEach(btn => {
+            (btn as HTMLButtonElement).addEventListener("click", playTurn)
+        })
+    }
+
+    return {
+        startGame,
+        resetGame
     }
 
 })();
@@ -203,40 +235,56 @@ const displayController = (() => {
     const playerOneNameInput = document.querySelector('input#player-one');
     const playerTwoNameInput = document.querySelector('input#player-two');
     const startGameBtn = document.querySelector('button.start-game');
-    const gridCellsList = document.querySelectorAll('button.grid-cell');
     const restartGameBtn = document.querySelector('button.reset-game');
     const resultDisplay = document.querySelector('h2.result-display');
     const playerNamesFrm = document.querySelector('section#form');
     const gridDisplay = document.querySelector('section#grid');
+    const gridContainer = document.querySelector('div.grid-container');
 
-    const showGrid = () => {
-        playerNamesFrm?.classList.add('hidden');
-        gridDisplay?.classList.remove('hidden');
-    }
     const updateResultDisplay = (msg:string) => {
         if (resultDisplay) {
             resultDisplay.textContent = msg
         };
     }
     const renderGrid = () => {
+        // remove the hidden class from grid section and add it to the 
+        // input name section
+        playerNamesFrm?.classList.add('hidden');
+        gridDisplay?.classList.remove('hidden');
+        // remove all child elements of gridContainer
+        while(gridContainer?.firstChild) {
+            gridContainer.removeChild(gridContainer.firstChild);
+        }
+        // use nested loops to create a new grid
         const length = gameBoard.getLength();
         for (let i = 0; i < length; i++) {
+            const gridRow = document.createElement('div');
+            gridRow.classList.add('grid-row');
             for (let j = 0; j < length; j++) {
-                gridCellsList.forEach(btn => {
-                    if (btn.nodeValue === `${i}, ${j}`) btn.textContent = gameBoard.getCellValue(i, j);
-                })
+                const cell = document.createElement('button');
+                cell.classList.add('grid-cell');
+                cell.nodeValue = `${i}, ${j}`;
+                cell.textContent = gameBoard.getCellValue(i, j);
+                gridRow.appendChild(cell);
             }
+            gridContainer?.appendChild(gridRow);
         }
     }
+    const getGridCellsList = () => document.querySelectorAll('button.grid-cell');
 
     return {
         playerOneNameInput,
         playerTwoNameInput,
-        showGrid,
         renderGrid,
-        gridCellsList,
         updateResultDisplay,
         startGameBtn,
-        restartGameBtn
+        restartGameBtn,
+        getGridCellsList
     }
 })();
+
+(displayController.startGameBtn as HTMLButtonElement)
+    .addEventListener("click", gameController.startGame);
+
+(displayController.restartGameBtn as HTMLButtonElement)
+    .addEventListener("click", gameController.resetGame);
