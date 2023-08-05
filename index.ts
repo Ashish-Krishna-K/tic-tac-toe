@@ -21,18 +21,21 @@
 // winner/draw we will display it to the user and remove all event listeners 
 // from the game board, if not we will proceed to the next play.
 
+// We only want X or O passed as markers hence declaring a type.
+type Markers = "X" | "O";
+
 const gameBoard = (() => {
     // a diagonals type because we want getDiagonal to accept only 1 | 2 as inputs.
-    type diagonals = 1 | 2;
+    type Diagonals = 1 | 2;
     // 2D array for storing the grid
-    const grid:string[][] = [
+    const grid:Markers[][] = [
         [],
         [],
         []
     ]
     // x and y here represents rows and column number respectively
-    const updateValue = (x: number, y: number, marker:string) => {
-        grid[x][y] = marker;
+    const updateValue = (row: number, column: number, marker:Markers) => {
+        grid[row][column] = marker;
     }
     // rows corresponds to the parent array inside our grid, so we simply return
     // the corresponding row as a string
@@ -53,7 +56,7 @@ const gameBoard = (() => {
     // (controlled by the diagonals type declared earlier) if the argument 
     // is 1 we return the primary diagonal, if it's 2 we return the secondary
     // diagonal
-    const getDiagonal = (diagonalNumber: diagonals) => {
+    const getDiagonal = (diagonalNumber: Diagonals) => {
         let diagonal = '';
         if (diagonalNumber === 1) {
             for (let i = 0; i < grid.length; i++) {
@@ -83,3 +86,95 @@ const gameBoard = (() => {
         getDiagonal
     }
 })();
+
+// A player interface to avoid implicit any errors while defining,
+// functions that expect a player object
+interface Player {
+    name: string,
+    marker: Markers
+}
+const player = (playerName: string, marker: Markers):Player => {
+    const name = playerName;
+    return {
+        name,
+        marker
+    }
+}
+
+// The gameController module will hold all the logic related to
+// the gameflow
+const gameController  = (() => {
+    // numOfTurnsPlayed is used to determine both a draw result
+    // and to track which player's turn is it currently.
+    let numOfTurnsPlayed = 0;
+    let winner:Player | null = null;
+    let playerOne:Player | null = null;
+    let playerTwo:Player | null = null;
+
+    const setPlayerOne = (playerName: string) => {
+        playerOne = player(playerName, "X");
+    }
+
+    const setPlayerTwo = (playerName: string) => {
+        playerTwo = player(playerName, "O");
+    }
+
+    const playTurn = (x:number, y:number) => {
+        // This if statement is purely to shut TypeScript lol
+        if (playerOne !== null && playerTwo !== null) {
+            // this is simple if the numOfTurnsPlayed is even we 
+            // will place playerOne's marker, if it's odd we will 
+            // place playerTwo's marker
+            gameBoard.updateValue(x, y, numOfTurnsPlayed % 2 === 0 ? playerOne.marker : playerTwo.marker);
+            numOfTurnsPlayed++
+        }
+    }
+
+    const checkTurnResult = () => {
+        // If the numOfTurnsPlayed is 8 or greater and the winner
+        // is currently null it means the game is a draw
+        if (numOfTurnsPlayed >= 8 && winner === null) {
+            // declare draw
+        } else {
+            // check each row to see if there's a 3 in a row
+            for (let i = 0; i < 3; i++) {
+                const row = gameBoard.getRows(i);
+                winner = checkWinner(row);
+                if (winner !== null) {
+                    // declare winner
+                    break;
+                };
+            }
+            if (winner !== null) return;
+            for (let i = 0; i < 3; i++) {
+                const column = gameBoard.getColumns(i);
+                winner = checkWinner(column);
+                if (winner !== null) {
+                    // declare winner
+                    break;
+                };
+            }
+            if (winner !== null) return;
+            for (let i = 1; i < 3; i++) {
+                const diagonal = gameBoard.getDiagonal(i);
+                winner = checkWinner(diagonal);
+                if (winner !== null) {
+                    // declare winner
+                    break;
+                };
+            }
+            return;
+        }
+    }
+
+    const checkWinner = (marking:string) => {
+        switch (marking) {
+            case ("XXX"):
+                return playerOne;
+            case ("OOO"):
+                return playerTwo;
+            default:
+                return null;
+        }
+    }
+})()
