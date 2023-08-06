@@ -115,10 +115,9 @@ var gameController = (function () {
         if (targetValue === "human") {
             opponent = "Player";
         }
-        else if (targetValue === "computer") {
+        if (targetValue === "computer") {
             opponent = "Computer";
         }
-        ;
     };
     var createPlayers = function (playerOneName, playerTwoName) {
         playerOne = player(playerOneName, "X");
@@ -149,6 +148,21 @@ var gameController = (function () {
             // Updates the display area to show who play's next
             updateResultDisplay(numOfTurnsPlayed % 2 === 0 ? "".concat(playerOne.name, "'s Turn") : "".concat(playerTwo.name, "'s Turn"));
             // After each turn we check if there's a winner
+            checkTurnResult();
+            // Make computer's move in the case opponent is computer
+            if (winner === null && opponent === "Computer") {
+                // Put a delay of 5 seconds to prevent computer's play from appearing instantly
+                setTimeout(playComputerTurn, 1000);
+            }
+        }
+    };
+    var playComputerTurn = function () {
+        if (playerOne !== null && playerTwo !== null) {
+            var computerMove = computerPlayer.generateMove();
+            gameBoard.updateValue(computerMove.row, computerMove.column, playerTwo.marker);
+            numOfTurnsPlayed++;
+            displayController.renderGrid();
+            displayController.updateResultDisplay(numOfTurnsPlayed % 2 === 0 ? "".concat(playerOne.name, "'s Turn") : "".concat(playerTwo.name, "'s Turn"));
             checkTurnResult();
         }
     };
@@ -205,12 +219,18 @@ var gameController = (function () {
     };
     var startGame = function () {
         var playerOneNameInput = displayController.playerOneNameInput, playerTwoNameInput = displayController.playerTwoNameInput, updateResultDisplay = displayController.updateResultDisplay, renderGrid = displayController.renderGrid;
-        var playerOneName = playerOneNameInput.value || "Player One";
-        var playerTwoName = playerTwoNameInput.value || "Player Two";
-        // create new player objects passing the values of playerOneInput
-        // and playerTwoInput as the playerNames
-        createPlayers(playerOneName, playerTwoName);
-        updateResultDisplay("".concat(playerOneName, "'s Turn"));
+        if (opponent === "Player") {
+            var playerOneName = playerOneNameInput.value || "Player One";
+            var playerTwoName = playerTwoNameInput.value || "Player Two";
+            // create new player objects passing the values of playerOneInput
+            // and playerTwoInput as the playerNames
+            createPlayers(playerOneName, playerTwoName);
+            updateResultDisplay("".concat(playerOneName, "'s Turn"));
+        }
+        else {
+            createPlayers("Player", "Computer");
+            updateResultDisplay("Player's Turn");
+        }
         renderGrid();
     };
     var resetGame = function () {
@@ -249,6 +269,7 @@ var displayController = (function () {
             else if (targetValue === "human") {
                 namesFrmDiv === null || namesFrmDiv === void 0 ? void 0 : namesFrmDiv.classList.remove('hidden');
             }
+            gameController.toggleOpponent(targetValue);
         });
     });
     var updateResultDisplay = function (msg) {

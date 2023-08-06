@@ -127,7 +127,12 @@ const gameController = (() => {
     let opponent: "Player" | "Computer" = "Player";
 
     const toggleOpponent = (targetValue: string) => {
-        
+        if (targetValue === "human") {
+            opponent = "Player"
+        }
+        if (targetValue === "computer") {
+            opponent = "Computer"
+        }
     }
 
     const createPlayers = (playerOneName: string, playerTwoName: string) => {
@@ -159,6 +164,22 @@ const gameController = (() => {
             // Updates the display area to show who play's next
             updateResultDisplay(numOfTurnsPlayed % 2 === 0 ? `${playerOne.name}'s Turn` : `${playerTwo.name}'s Turn`);
             // After each turn we check if there's a winner
+            checkTurnResult();
+            // Make computer's move in the case opponent is computer
+            if (winner === null && opponent === "Computer") {
+                // Put a delay of 1 second to prevent computer's play from appearing instantly
+                setTimeout(playComputerTurn, 1000);
+            }
+        }
+    }
+
+    const playComputerTurn = () => {
+        if (playerOne !== null && playerTwo !== null) {
+            const computerMove = computerPlayer.generateMove();
+            gameBoard.updateValue(computerMove.row, computerMove.column, playerTwo.marker);
+            numOfTurnsPlayed++
+            displayController.renderGrid();
+            displayController.updateResultDisplay(numOfTurnsPlayed % 2 === 0 ? `${playerOne.name}'s Turn` : `${playerTwo.name}'s Turn`);
             checkTurnResult();
         }
     }
@@ -220,13 +241,18 @@ const gameController = (() => {
             renderGrid,
         } = displayController
 
-        const playerOneName = (playerOneNameInput as HTMLInputElement).value || "Player One";
-        const playerTwoName = (playerTwoNameInput as HTMLInputElement).value || "Player Two";
+        if (opponent === "Player") {
+            const playerOneName = (playerOneNameInput as HTMLInputElement).value || "Player One";
+            const playerTwoName = (playerTwoNameInput as HTMLInputElement).value || "Player Two";
 
-        // create new player objects passing the values of playerOneInput
-        // and playerTwoInput as the playerNames
-        createPlayers(playerOneName, playerTwoName);
-        updateResultDisplay(`${playerOneName}'s Turn`)
+            // create new player objects passing the values of playerOneInput
+            // and playerTwoInput as the playerNames
+            createPlayers(playerOneName, playerTwoName);
+            updateResultDisplay(`${playerOneName}'s Turn`);
+        } else {
+            createPlayers("Player", "Computer");
+            updateResultDisplay("Player's Turn")
+        }
         renderGrid();
     }
 
