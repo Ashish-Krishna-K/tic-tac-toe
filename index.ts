@@ -126,9 +126,8 @@ const gameController = (() => {
     let playerTwo: Player | null = null;
     let opponent: "Player" | "Computer" = "Player";
 
-    const toggleOpponent = (ev: MouseEvent) => {
-        const targetValue = (ev.target as HTMLButtonElement).value;
-        targetValue === "human" ? opponent = "Player" : opponent = "Computer";
+    const toggleOpponent = (targetValue: string) => {
+        
     }
 
     const createPlayers = (playerOneName: string, playerTwoName: string) => {
@@ -249,21 +248,30 @@ const gameController = (() => {
 })();
 
 const displayController = (() => {
+    const playerNamesFrm = document.querySelector('section#form');
+    const gridDisplay = document.querySelector('section#grid');
     const gameModeControls = document.querySelector('div.select-game-mode');
     const humanOpponentBtn = document.querySelector('button.select-human');
     const computerOpponenetBtn = document.querySelector('button.select-computer');
+    const namesFrmDiv = document.querySelector('div.pseudo-form');
     const playerOneNameInput = document.querySelector('input#player-one');
     const playerTwoNameInput = document.querySelector('input#player-two');
     const startGameBtn = document.querySelector('button.start-game');
     const restartGameBtn = document.querySelector('button.reset-game');
     const resultDisplay = document.querySelector('h2.result-display');
-    const playerNamesFrm = document.querySelector('section#form');
-    const gridDisplay = document.querySelector('section#grid');
     const gridContainer = document.querySelector('div.grid-container');
 
     gameModeControls?.childNodes.forEach(node => {
-        (node as HTMLButtonElement).addEventListener("click", gameController.toggleOpponent);
-    })
+        (node as HTMLButtonElement).addEventListener("click", (ev) => {
+            const targetValue = (ev.target as HTMLButtonElement).value;
+            if (targetValue === "computer") {
+                namesFrmDiv?.classList.add('hidden');
+            } else if (targetValue === "human") {
+                namesFrmDiv?.classList.remove('hidden');
+            }
+            gameController.toggleOpponent(targetValue);
+        });
+    });
 
     const updateResultDisplay = (msg: string) => {
         if (resultDisplay) {

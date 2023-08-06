@@ -110,6 +110,16 @@ var gameController = (function () {
     var winner = null;
     var playerOne = null;
     var playerTwo = null;
+    var opponent = "Player";
+    var toggleOpponent = function (targetValue) {
+        if (targetValue === "human") {
+            opponent = "Player";
+        }
+        else if (targetValue === "computer") {
+            opponent = "Computer";
+        }
+        ;
+    };
     var createPlayers = function (playerOneName, playerTwoName) {
         playerOne = player(playerOneName, "X");
         playerTwo = player(playerTwoName, "O");
@@ -211,23 +221,36 @@ var gameController = (function () {
         displayController.renderGrid();
     };
     return {
+        toggleOpponent: toggleOpponent,
         startGame: startGame,
         resetGame: resetGame,
         playTurn: playTurn
     };
 })();
 var displayController = (function () {
+    var playerNamesFrm = document.querySelector('section#form');
+    var gridDisplay = document.querySelector('section#grid');
     var gameModeControls = document.querySelector('div.select-game-mode');
     var humanOpponentBtn = document.querySelector('button.select-human');
     var computerOpponenetBtn = document.querySelector('button.select-computer');
+    var namesFrmDiv = document.querySelector('div.pseudo-form');
     var playerOneNameInput = document.querySelector('input#player-one');
     var playerTwoNameInput = document.querySelector('input#player-two');
     var startGameBtn = document.querySelector('button.start-game');
     var restartGameBtn = document.querySelector('button.reset-game');
     var resultDisplay = document.querySelector('h2.result-display');
-    var playerNamesFrm = document.querySelector('section#form');
-    var gridDisplay = document.querySelector('section#grid');
     var gridContainer = document.querySelector('div.grid-container');
+    gameModeControls === null || gameModeControls === void 0 ? void 0 : gameModeControls.childNodes.forEach(function (node) {
+        node.addEventListener("click", function (ev) {
+            var targetValue = ev.target.value;
+            if (targetValue === "computer") {
+                namesFrmDiv === null || namesFrmDiv === void 0 ? void 0 : namesFrmDiv.classList.add('hidden');
+            }
+            else if (targetValue === "human") {
+                namesFrmDiv === null || namesFrmDiv === void 0 ? void 0 : namesFrmDiv.classList.remove('hidden');
+            }
+        });
+    });
     var updateResultDisplay = function (msg) {
         if (resultDisplay) {
             resultDisplay.textContent = msg;
@@ -283,10 +306,3 @@ var displayController = (function () {
         declareWinner: declareWinner
     };
 })();
-/*
-(displayController.startGameBtn as HTMLButtonElement)
-    .addEventListener("click", gameController.startGame);
-
-(displayController.restartGameBtn as HTMLButtonElement)
-    .addEventListener("click", gameController.resetGame);
-*/ 
