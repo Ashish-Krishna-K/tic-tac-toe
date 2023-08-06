@@ -3,6 +3,14 @@ type Markers = "X" | "O";
 // a diagonals type because we want getDiagonal to accept only 1 | 2 as inputs.
 type Diagonals = 1 | 2;
 
+// A player interface to avoid implicit any errors while defining,
+// functions that expect a player object
+interface Player {
+    name: string,
+    marker: Markers
+}
+
+
 const gameBoard = (() => {
     // 2D array for storing the grid
     const grid: Markers[][] = [
@@ -77,12 +85,6 @@ const gameBoard = (() => {
     }
 })();
 
-// A player interface to avoid implicit any errors while defining,
-// functions that expect a player object
-interface Player {
-    name: string,
-    marker: Markers
-}
 const player = (playerName: string, marker: Markers): Player => {
     const name = playerName;
     return {
@@ -113,7 +115,7 @@ const computerPlayer = (() => {
     return {
         generateMove
     }
-})()
+})();
 
 // The gameController module will hold all the logic related to
 // the gameflow
@@ -238,16 +240,13 @@ const gameController = (() => {
 
     const startGame = () => {
         const {
-            playerOneNameInput,
-            playerTwoNameInput,
+            getPlayerNameInputs,
             updateResultDisplay,
             renderGrid,
         } = displayController
 
         if (opponent === "Player") {
-            const playerOneName = (playerOneNameInput as HTMLInputElement).value || "Player One";
-            const playerTwoName = (playerTwoNameInput as HTMLInputElement).value || "Player Two";
-
+            const {playerOneName, playerTwoName} = getPlayerNameInputs();
             // create new player objects passing the values of playerOneInput
             // and playerTwoInput as the playerNames
             createPlayers(playerOneName, playerTwoName);
@@ -306,6 +305,15 @@ const displayController = (() => {
         });
     });
 
+    const getPlayerNameInputs = () => {
+        const playerOneName = (playerOneNameInput as HTMLInputElement).value || "Player One";
+        const playerTwoName = (playerTwoNameInput as HTMLInputElement).value || "Player Two";
+        return {
+            playerOneName,
+            playerTwoName
+        }
+    }
+
     const updateResultDisplay = (msg: string) => {
         if (resultDisplay) {
             resultDisplay.textContent = msg
@@ -354,12 +362,9 @@ const displayController = (() => {
     (restartGameBtn as HTMLButtonElement).addEventListener("click", gameController.resetGame);
 
     return {
-        playerOneNameInput,
-        playerTwoNameInput,
+        getPlayerNameInputs,
         renderGrid,
         updateResultDisplay,
-        startGameBtn,
-        restartGameBtn,
         declareWinner
     }
 })();
