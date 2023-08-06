@@ -165,6 +165,8 @@ const gameController = (() => {
             updateResultDisplay(numOfTurnsPlayed % 2 === 0 ? `${playerOne.name}'s Turn` : `${playerTwo.name}'s Turn`);
             // After each turn we check if there's a winner
             checkTurnResult();
+            // We will prevent computer from getting a turn in the case all possible 
+            // it's game over.
             if (numOfTurnsPlayed > 8) return;
             // Make computer's move in the case opponent is computer
             if (winner === null && opponent === "Computer") {

@@ -190,12 +190,12 @@ button.reset-game {
     border-radius: 8px;
     color: var(--bg-color);
     cursor: pointer;
+    transition: scale 0.2s ease-in-out;
 }
 
 button.start-game:hover,
 button.reset-game:hover {
     scale: 0.9;
-    transition: scale 0.2s ease-in-out;
 }
 
 div.game-mode-controls>button {
