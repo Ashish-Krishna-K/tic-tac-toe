@@ -91,6 +91,30 @@ const player = (playerName: string, marker: Markers): Player => {
     }
 }
 
+const computerPlayer = (() => {
+    // Generate a random number between 0 and 2
+    const generateRandNumb = () => Math.floor(Math.random() * gameBoard.getLength());
+    const generateMove = () => {
+        let row = generateRandNumb();
+        let column = generateRandNumb();
+        // if the random-coordinates created is already marked,
+        // we continue generating random coordinates untill we
+        // generate one which is not already marked and then return
+        // that as an object
+        while(gameBoard.getCellValue(row, column)) {
+            row = generateRandNumb();
+            column = generateRandNumb();
+        }
+        return {
+            row,
+            column
+        }
+    }
+    return {
+        generateMove
+    }
+})() 
+
 // The gameController module will hold all the logic related to
 // the gameflow
 const gameController = (() => {
