@@ -62,13 +62,15 @@ table {
 
 html,
 body {
-    min-height: 100dvh;
+    /* so that the html and body will occupy the full viewport */
+    min-height: 100dvh; 
 }
 
 body {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 5rem 1fr 3rem;
+    /* header, main and footer respectively*/
+    grid-template-rows: 5rem 1fr 3rem; 
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Tektur', cursive;
@@ -92,7 +94,8 @@ h2 {
 
 section {
     width: 60%;
-    margin: 10vh auto;
+    /*Combined with 60% width this will acheive horizontal center alignment*/
+    margin: 10vh auto; 
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 5rem 1fr;
@@ -104,6 +107,7 @@ div.pseudo-form {
     display: grid;
     grid-template-rows: repeat(3, 1fr);
     grid-template-columns: 1fr;
+    /* padding only above and below not to the sides */
     padding: 4vw 0;
 }
 
@@ -125,7 +129,6 @@ div.player-details>input {
     background-color: var(--gric-btn-bg-color);
     border: none;
     border-radius: 4px;
-    min-height: 3vh;
     color: var(--bg-color);
     padding: 8px;
     font-family: inherit;
@@ -136,11 +139,16 @@ div.grid-container {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(3, 1fr);
+    /* a neet trick for the grid lines to appear */
     gap: 2px;
+    /* once again we only want margin's above and below not 
+    to the sides */
     margin: 5vh 0;
 }
 
 div.grid-row {
+    /* this whole selectro is purely to make the grid lines appear
+    without showing borders */
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: 1fr;
@@ -148,11 +156,13 @@ div.grid-row {
 }
 
 button.grid-cell {
-    width: 6rem;
-    height: 6rem;
+    width: 5rem;
+    height: 5rem;
     font-size: 4rem;
     padding: 0;
     border: none;
+    /* Without this the button seems to go down when clicked
+    werid! */
     vertical-align: middle;
     background-color: var(--gric-btn-bg-color);
     color: var(--bg-color);
@@ -180,6 +190,8 @@ button.reset-game:hover {
 }
 
 .hidden {
+    /* because the sections have a display of grid
+    need to over ride with the !important */
     display: none !important;
 }
 
@@ -199,5 +211,8 @@ footer a:visited {
 }
 
 footer a:hover {
+    /* scale would've been better but since we can't
+    use scale on text elements instead reverted to 
+    font-size to acheive a similar effect */
     font-size: 2rem;
 }
