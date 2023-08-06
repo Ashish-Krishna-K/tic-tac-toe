@@ -96,6 +96,7 @@ section {
     width: 60%;
     /*Combined with 60% width this will acheive horizontal center alignment*/
     margin: 10vh auto; 
+    padding: 0 0 2vh 0;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 5rem 1fr;
@@ -105,10 +106,20 @@ section {
 
 div.pseudo-form {
     display: grid;
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     grid-template-columns: 1fr;
+    gap: 2vh;
+    align-items: center;
+    justify-items: center;
     /* padding only above and below not to the sides */
-    padding: 4vw 0;
+    padding: 2vh 0;
+    margin-top: 2vh;
+    transition: opacity 0.2s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+div.pseudo-form.hidden {
+    visibility: hidden;
+    opacity: 0;
 }
 
 div.player-details {
@@ -120,12 +131,10 @@ div.player-details {
 }
 
 div.player-details>label {
-    justify-self: start;
     font-weight: 600;
 }
 
 div.player-details>input {
-    justify-self: end;
     background-color: var(--gric-btn-bg-color);
     border: none;
     border-radius: 4px;
@@ -189,10 +198,27 @@ button.reset-game:hover {
     transition: scale 0.2s ease-in-out;
 }
 
+div.game-mode-controls>button {
+    font-family: inherit;
+    font-size: 1.5rem;
+    font-weight: 500;
+    padding: 1vh 5vw;
+    background-color: var(--bg-color);
+    border: none;
+    border-radius: 8px;
+    color: var(--btn-bg-color);
+    cursor: pointer;
+}
+
+button.selected {
+    background-color: var(--btn-bg-color) !important;
+    color: var(--bg-color) !important;
+}
+
 .hidden {
     /* because the sections have a display of grid
     need to over ride with the !important */
-    display: none !important;
+    display: none;
 }
 
 footer {

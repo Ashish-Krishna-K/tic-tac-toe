@@ -149,9 +149,11 @@ var gameController = (function () {
             updateResultDisplay(numOfTurnsPlayed % 2 === 0 ? "".concat(playerOne.name, "'s Turn") : "".concat(playerTwo.name, "'s Turn"));
             // After each turn we check if there's a winner
             checkTurnResult();
+            if (numOfTurnsPlayed > 8)
+                return;
             // Make computer's move in the case opponent is computer
             if (winner === null && opponent === "Computer") {
-                // Put a delay of 5 seconds to prevent computer's play from appearing instantly
+                // Put a delay of 1 second to prevent computer's play from appearing instantly
                 setTimeout(playComputerTurn, 1000);
             }
         }
@@ -250,7 +252,7 @@ var gameController = (function () {
 var displayController = (function () {
     var playerNamesFrm = document.querySelector('section#form');
     var gridDisplay = document.querySelector('section#grid');
-    var gameModeControls = document.querySelector('div.select-game-mode');
+    var gameModeControls = document.querySelector('div.game-mode-controls');
     var humanOpponentBtn = document.querySelector('button.select-human');
     var computerOpponenetBtn = document.querySelector('button.select-computer');
     var namesFrmDiv = document.querySelector('div.pseudo-form');
@@ -264,9 +266,13 @@ var displayController = (function () {
         node.addEventListener("click", function (ev) {
             var targetValue = ev.target.value;
             if (targetValue === "computer") {
+                computerOpponenetBtn === null || computerOpponenetBtn === void 0 ? void 0 : computerOpponenetBtn.classList.add('selected');
+                humanOpponentBtn === null || humanOpponentBtn === void 0 ? void 0 : humanOpponentBtn.classList.remove('selected');
                 namesFrmDiv === null || namesFrmDiv === void 0 ? void 0 : namesFrmDiv.classList.add('hidden');
             }
             else if (targetValue === "human") {
+                computerOpponenetBtn === null || computerOpponenetBtn === void 0 ? void 0 : computerOpponenetBtn.classList.remove('selected');
+                humanOpponentBtn === null || humanOpponentBtn === void 0 ? void 0 : humanOpponentBtn.classList.add('selected');
                 namesFrmDiv === null || namesFrmDiv === void 0 ? void 0 : namesFrmDiv.classList.remove('hidden');
             }
             gameController.toggleOpponent(targetValue);

@@ -165,6 +165,7 @@ const gameController = (() => {
             updateResultDisplay(numOfTurnsPlayed % 2 === 0 ? `${playerOne.name}'s Turn` : `${playerTwo.name}'s Turn`);
             // After each turn we check if there's a winner
             checkTurnResult();
+            if (numOfTurnsPlayed > 8) return;
             // Make computer's move in the case opponent is computer
             if (winner === null && opponent === "Computer") {
                 // Put a delay of 1 second to prevent computer's play from appearing instantly
@@ -276,7 +277,7 @@ const gameController = (() => {
 const displayController = (() => {
     const playerNamesFrm = document.querySelector('section#form');
     const gridDisplay = document.querySelector('section#grid');
-    const gameModeControls = document.querySelector('div.select-game-mode');
+    const gameModeControls = document.querySelector('div.game-mode-controls');
     const humanOpponentBtn = document.querySelector('button.select-human');
     const computerOpponenetBtn = document.querySelector('button.select-computer');
     const namesFrmDiv = document.querySelector('div.pseudo-form');
@@ -291,8 +292,12 @@ const displayController = (() => {
         (node as HTMLButtonElement).addEventListener("click", (ev) => {
             const targetValue = (ev.target as HTMLButtonElement).value;
             if (targetValue === "computer") {
+                computerOpponenetBtn?.classList.add('selected');
+                humanOpponentBtn?.classList.remove('selected');
                 namesFrmDiv?.classList.add('hidden');
             } else if (targetValue === "human") {
+                computerOpponenetBtn?.classList.remove('selected');
+                humanOpponentBtn?.classList.add('selected');
                 namesFrmDiv?.classList.remove('hidden');
             }
             gameController.toggleOpponent(targetValue);
