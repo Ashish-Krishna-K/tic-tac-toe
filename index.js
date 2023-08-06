@@ -78,6 +78,29 @@ var player = function (playerName, marker) {
         marker: marker
     };
 };
+var computerPlayer = (function () {
+    // Generate a random number between 0 and 2
+    var generateRandNumb = function () { return Math.floor(Math.random() * gameBoard.getLength()); };
+    var generateMove = function () {
+        var row = generateRandNumb();
+        var column = generateRandNumb();
+        // if the random-coordinates created is already marked,
+        // we continue generating random coordinates untill we
+        // generate one which is not already marked and then return
+        // that as an object
+        while (gameBoard.getCellValue(row, column)) {
+            row = generateRandNumb();
+            column = generateRandNumb();
+        }
+        return {
+            row: row,
+            column: column
+        };
+    };
+    return {
+        generateMove: generateMove
+    };
+})();
 // The gameController module will hold all the logic related to
 // the gameflow
 var gameController = (function () {
@@ -194,6 +217,9 @@ var gameController = (function () {
     };
 })();
 var displayController = (function () {
+    var gameModeControls = document.querySelector('div.select-game-mode');
+    var humanOpponentBtn = document.querySelector('button.select-human');
+    var computerOpponenetBtn = document.querySelector('button.select-computer');
     var playerOneNameInput = document.querySelector('input#player-one');
     var playerTwoNameInput = document.querySelector('input#player-two');
     var startGameBtn = document.querySelector('button.start-game');
@@ -245,6 +271,8 @@ var displayController = (function () {
             btn.removeEventListener("click", gameController.playTurn);
         });
     };
+    startGameBtn.addEventListener("click", gameController.startGame);
+    restartGameBtn.addEventListener("click", gameController.resetGame);
     return {
         playerOneNameInput: playerOneNameInput,
         playerTwoNameInput: playerTwoNameInput,
@@ -255,7 +283,10 @@ var displayController = (function () {
         declareWinner: declareWinner
     };
 })();
-displayController.startGameBtn
+/*
+(displayController.startGameBtn as HTMLButtonElement)
     .addEventListener("click", gameController.startGame);
-displayController.restartGameBtn
+
+(displayController.restartGameBtn as HTMLButtonElement)
     .addEventListener("click", gameController.resetGame);
+*/ 

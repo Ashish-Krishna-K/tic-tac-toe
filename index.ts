@@ -101,7 +101,7 @@ const computerPlayer = (() => {
         // we continue generating random coordinates untill we
         // generate one which is not already marked and then return
         // that as an object
-        while(gameBoard.getCellValue(row, column)) {
+        while (gameBoard.getCellValue(row, column)) {
             row = generateRandNumb();
             column = generateRandNumb();
         }
@@ -113,7 +113,7 @@ const computerPlayer = (() => {
     return {
         generateMove
     }
-})() 
+})()
 
 // The gameController module will hold all the logic related to
 // the gameflow
@@ -124,6 +124,12 @@ const gameController = (() => {
     let winner: Player | null = null;
     let playerOne: Player | null = null;
     let playerTwo: Player | null = null;
+    let opponent: "Player" | "Computer" = "Player";
+
+    const toggleOpponent = (ev: MouseEvent) => {
+        const targetValue = (ev.target as HTMLButtonElement).value;
+        targetValue === "human" ? opponent = "Player" : opponent = "Computer";
+    }
 
     const createPlayers = (playerOneName: string, playerTwoName: string) => {
         playerOne = player(playerOneName, "X");
@@ -170,7 +176,7 @@ const gameController = (() => {
     }
 
     const checkTurnResult = () => {
-        const {declareWinner} = displayController;
+        const { declareWinner } = displayController;
         // If the numOfTurnsPlayed is 8 or greater and the winner
         // is currently null it means the game is a draw
         if (numOfTurnsPlayed >= 9 && winner === null) {
@@ -234,6 +240,7 @@ const gameController = (() => {
     }
 
     return {
+        toggleOpponent,
         startGame,
         resetGame,
         playTurn
@@ -242,6 +249,9 @@ const gameController = (() => {
 })();
 
 const displayController = (() => {
+    const gameModeControls = document.querySelector('div.select-game-mode');
+    const humanOpponentBtn = document.querySelector('button.select-human');
+    const computerOpponenetBtn = document.querySelector('button.select-computer');
     const playerOneNameInput = document.querySelector('input#player-one');
     const playerTwoNameInput = document.querySelector('input#player-two');
     const startGameBtn = document.querySelector('button.start-game');
@@ -250,6 +260,10 @@ const displayController = (() => {
     const playerNamesFrm = document.querySelector('section#form');
     const gridDisplay = document.querySelector('section#grid');
     const gridContainer = document.querySelector('div.grid-container');
+
+    gameModeControls?.childNodes.forEach(node => {
+        (node as HTMLButtonElement).addEventListener("click", gameController.toggleOpponent);
+    })
 
     const updateResultDisplay = (msg: string) => {
         if (resultDisplay) {
@@ -295,6 +309,9 @@ const displayController = (() => {
         })
     }
 
+    (startGameBtn as HTMLButtonElement).addEventListener("click", gameController.startGame);
+    (restartGameBtn as HTMLButtonElement).addEventListener("click", gameController.resetGame);
+
     return {
         playerOneNameInput,
         playerTwoNameInput,
@@ -305,9 +322,3 @@ const displayController = (() => {
         declareWinner
     }
 })();
-
-(displayController.startGameBtn as HTMLButtonElement)
-    .addEventListener("click", gameController.startGame);
-
-(displayController.restartGameBtn as HTMLButtonElement)
-    .addEventListener("click", gameController.resetGame);
